@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificacion de Títulos</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    input, button { padding: 8px; margin-top: 10px; }
+    #resultado { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Verificador de Títulos</h2>
+  <form onsubmit="return false;">
+    <label for="cedula">Ingrese su cédula:</label><br>
+    <input type="text" id="cedula" maxlength="10" placeholder="Solo números"><br>
+    <button onclick="verificarCedula()">Verificar</button>
+  </form>
+  <div id="resultado"></div>
+
+  <script>
+    function verificarCedula() {
+      let cedula = document.getElementById("cedula").value.trim();
+      let resultado = document.getElementById("resultado");
+
+      // Verifica que solo sean números
+      if (!/^[0-9]+$/.test(cedula)) {
+        resultado.textContent = "❌ La cédula solo debe contener números.";
+        resultado.style.color = "red";
+        return;
+      }
+
+      // Verifica longitud (Colombia: entre 6 y 10 dígitos)
+      if (cedula.length < 6 || cedula.length > 10) {
+        resultado.textContent = "❌ La cédula debe tener entre 6 y 10 dígitos.";
+        resultado.style.color = "red";
+        return;
+      }
+
+      // Si cumple las reglas
+      resultado.textContent = "✅ Cédula válida en formato colombiano.";
+      resultado.style.color = "green";
+    }
+  </script>
+</body>
+</html>
