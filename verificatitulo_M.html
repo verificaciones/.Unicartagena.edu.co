@@ -6,7 +6,7 @@
   <title>Verificador de Título Académico</title>
   <style>
     :root{font-family:Arial,Helvetica,sans-serif;color:#111}
-    body{max-width:900px;margin:30px auto;padding:20px;background:#f7f7f9;border-radius:10px}
+    body{max-width:900px;margin:30px auto;padding:20px;border-radius:10px}
     h1{font-size:1.6rem;margin-bottom:0.2rem}
     .card{background:white;padding:18px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
     label{display:block;margin-top:10px;font-weight:600}
@@ -22,56 +22,44 @@
     pre{white-space:pre-wrap;background:#f1f1f1;padding:10px;border-radius:6px;overflow:auto}
   </style>
 </head>
-<body>
+<body background="fonmuni.png">
+   <center><img src="topcert.png"></center>
   <div class="card">
-    <h1>Verificador de título académico Universidad de Cartagena</h1>
-    <p class="hint">Ingresa los datos del título y el verificador buscará en un registro iniciado. También puedes cargar un archivo JSON/CSV con el padrón de títulos para verificar contra él.</p>
+    <h1> Universidad de Cartagena</h1>
+    <p class="hint">El egresado proyecta la imagen en el ámbito internacional, a través de su proceder, entendido éste como el comportamiento ético que respeta los valores universales y los de su ejercicio profesional.</p>
 
     <form id="verifyForm" onsubmit="event.preventDefault();verify()">
       <div class="flex">
         <div class="half">
           <label for="fullName">Nombre completo</label>
-          <input id="fullName" placeholder="Ej: María Fernanda Gómez" required>
+          <input id="fullName" placeholder="Francisco Alberto Arevalo Olivo">
         </div>
         <div class="half">
           <label for="idNumber">Número de documento</label>
-          <input id="idNumber" placeholder="Ej: 1.234.567.890" required>
+          <input id="idNumber" placeholder="1.002.035.613 Exp. Barranquilla, Atlántico">
         </div>
       </div>
 
       <label for="degree">Título / Grado</label>
-      <input id="degree" placeholder="Ej: Ingeniería de Sistemas" required>
+      <input id="degree" placeholder="Maestría en Educación">
 
       <div class="flex">
         <div class="half">
-          <label for="institution">Institución</label>
-          <input id="institution" placeholder="Ej: Universidad de Cartagena" required>
+          <label for="institucion">Registro</label>
+          <input id="institution" placeholder="Acta:80421245, Folio:328, Libro:12">
         </div>
         <div class="half">
           <label for="year">Año de expedición</label>
-          <input id="year" type="number" placeholder="Ej: 2018" min="1900" max="2100">
+          <input id="year"  placeholder="2025">
         </div>
       </div>
 
-      <div style="margin-top:12px">
-        <label for="registryUpload">Cargar padrón (opcional) — JSON o CSV</label>
-        <input id="registryUpload" type="file" accept=".json,.csv">
-        <div class="hint">Si no carga padrón, se usará un registro de ejemplo embebido en el archivo.</div>
-      </div>
+    
 
-      <button type="submit">Verificar</button>
+      
     </form>
 
-    <div id="result" class="result small" style="display:none"></div>
-
-    <hr style="margin:18px 0">
-    <details>
-      <summary style="cursor:pointer;font-weight:700">Registro de ejemplo (puede reemplazarse cargando un JSON/CSV)</summary>
-      <pre id="sampleData"></pre>
-    </details>
-
-    <p class="hint">Aviso:  Para comprobaciones oficiales se necesita consultar la base de datos del ministerio de educación.</p>
-  </div>
+    
 
 <script>
 // ======= Registro de ejemplo =======
@@ -91,6 +79,16 @@ const sampleRegistry = [
     "institucion":"Universidad de Cartagena",
     "anio":2015,
     "codigo":"UV-2015-0143"
+  }
+  {
+    "nombre":"Francisco Alberto Arevalo Olivo",
+    "documento":"1002035613",
+    "titulo":"Maestria en Educación",
+    "institucion":"Universidad de Cartagena",
+    "anio":2005,
+    "acta":"80421245"
+    "folio":"328"
+    "libro":"12" 
   }
 ];
 
@@ -190,5 +188,7 @@ fileInput.addEventListener('change', async (e) => {
 });
 
 </script>
+ <p class="hint">El egresado udeceista reposa la imagen, la identidad y la prospectiva del "Alma Máter". En él, como ciudadano, convergen y se dan las reflexiones sobre la realidad de una sociedad. Se constituye en un enlace entre la Universidad y la sociedad, y por lo tanto, es un reflejo de la impronta institucional. </p>
+<center><img src="bottcert.png"></center>
 </body>
 </html>
