@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verificador de Título Académico</title>
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color:#111}
+    body{max-width:900px;margin:30px auto;padding:20px;border-radius:10px}
+    h1{font-size:1.6rem;margin-bottom:0.2rem}
+    .card{background:white;padding:18px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.06)}
+    label{display:block;margin-top:10px;font-weight:600}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;border:1px solid #ccc;border-radius:6px}
+    button{margin-top:12px;padding:10px 14px;border:0;border-radius:8px;background:#2b7cff;color:white;font-weight:700;cursor:pointer}
+    .result{margin-top:14px;padding:12px;border-radius:8px}
+    .ok{background:#e6ffed;border:1px solid #2db67a;color:#0b6623}
+    .no{background:#fff0f0;border:1px solid #d9534f;color:#6b0f0f}
+    .hint{font-size:0.9rem;color:#666;margin-top:8px}
+    .small{font-size:0.85rem;color:#444}
+    .flex{display:flex;gap:8px}
+    .half{flex:1}
+    pre{white-space:pre-wrap;background:#f1f1f1;padding:10px;border-radius:6px;overflow:auto}
+  </style>
+</head>
+<body background="fonmuni.png">
+   <center><img src="topcert.png"></center>
+  <div class="card">
+    <h1> Universidad de Cartagena</h1>
+    <p class="hint">El egresado proyecta la imagen en el ámbito internacional, a través de su proceder, entendido éste como el comportamiento ético que respeta los valores universales y los de su ejercicio profesional.</p>
+
+    <form id="verifyForm" onsubmit="event.preventDefault();verify()">
+      <div class="flex">
+        <div class="half">
+          <label for="fullName">Nombre completo</label>
+          <input id="fullName" placeholder="Walter de Jesús Guzmán Mercado">
+        </div>
+        <div class="half">
+          <label for="idNumber">Número de documento</label>
+          <input id="idNumber" placeholder="74.753.809 Exp. Aguazul, Casanare">
+        </div>
+      </div>
+
+      <label for="degree">Título / Grado</label>
+      <input id="degree" placeholder="Licenciatura en Educación con Enfasis en Ciencias Sociales y Ambientales">
+
+      <div class="flex">
+        <div class="half">
+          <label for="institucion">Registro</label>
+          <input id="institution" placeholder="Acta:  , Folio:  , Libro: ">
+        </div>
+        <div class="half">
+          <label for="year">Año de expedición</label>
+          <input id="year"  placeholder=" / /   ">
+        </div>
+      </div>
+
+    
+
+      
+    </form>
+
+    
+
+<script>
+// ======= Registro de ejemplo =======
+const sampleRegistry = [
+  {
+    "nombre":"María Fernanda Gómez",
+    "documento":"1234567890",
+    "titulo":"Ingeniería de Sistemas",
+    "institucion":"Universidad de Cartagena",
+    "anio":2018,
+    "codigo":"UN-2018-0001"
+  },
+  {
+    "nombre":"Juan Pérez",
+    "documento":"987654321",
+    "titulo":"Administración de Empresas",
+    "institucion":"Universidad de Cartagena",
+    "anio":2015,
+    "codigo":"UV-2015-0143"
+  }
+  {
+    "nombre":"Francisco Alberto Arevalo Olivo",
+    "documento":"1002035613",
+    "titulo":"Maestria en Educación",
+    "institucion":"Universidad de Cartagena",
+    "anio":2005,
+    "acta":"80421245"
+    "folio":"328"
+    "libro":"12" 
+  }
+];
+
+// Mostrar registro de ejemplo
+document.getElementById('sampleData').textContent = JSON.stringify(sampleRegistry, null, 2);
+
+let registry = sampleRegistry.slice(); // copia que puede sustituirse al cargar archivo
+
+// Normaliza texto para comparar: quita acentos, minusculas, espacios extra
+function normalize(s){
+  if(s==null) return '';
+  return s.toString().normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().replace(/\s+/g,' ').trim();
+}
+
+function verify(){
+  const name = document.getElementById('fullName').value;
+  const doc = document.getElementById('idNumber').value;
+  const degree = document.getElementById('degree').value;
+  const inst = document.getElementById('institution').value;
+  const year = document.getElementById('year').value;
+
+  const normName = normalize(name);
+  const normDoc = normalize(doc).replace(/[\.\-\s]/g,'');
+  const normDegree = normalize(degree);
+  const normInst = normalize(inst);
+
+  // Buscar por diferentes criterios: preferimos coincidencia de documento + título/institución
+  let found = registry.find(r => {
+    const rn = normalize(r.nombre);
+    const rd = normalize(r.documento).replace(/[\.\-\s]/g,'');
+    const rt = normalize(r.titulo);
+    const ri = normalize(r.institucion);
+
+    // coincidencia por documento exacta
+    if(rd && normDoc && rd === normDoc){
+      // si el usuario suministró título o institución, requerimos que al menos uno coincida parcialmente
+      const titleMatch = !normDegree || rt.includes(normDegree) || normDegree.includes(rt);
+      const instMatch = !normInst || ri.includes(normInst) || normInst.includes(ri);
+      return titleMatch && instMatch;
+    }
+
+    // coincidencia por nombre + título + institución (más laxa)
+    if(normName && rt && ri){
+      return rn === normName && rt.includes(normDegree) && ri.includes(normInst);
+    }
+
+    return false;
+  });
+
+  const resultEl = document.getElementById('result');
+  if(found){
+    resultEl.className = 'result ok small';
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<strong>Título verificado ✔</strong><br>Nombre: ${found.nombre}<br>Título: ${found.titulo}<br>Institución: ${found.institucion}<br>Año: ${found.anio}<br>Código: ${found.codigo || 'N/A'}`;
+  } else {
+    resultEl.className = 'result no small';
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `<strong>No se encontró coincidencia ✖</strong><br>Revise los datos o cargue el padrón oficial si lo tiene.`;
+  }
+}
+
+// Carga de archivo JSON o CSV
+const fileInput = document.getElementById('registryUpload');
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const text = await file.text();
+  try{
+    if(file.name.toLowerCase().endsWith('.json')){
+      const parsed = JSON.parse(text);
+      if(Array.isArray(parsed)){
+        registry = parsed;
+        document.getElementById('sampleData').textContent = JSON.stringify(registry, null, 2);
+        alert('Padrón JSON cargado. Ahora las verificaciones usarán ese padrón.');
+      } else {
+        alert('El JSON debe contener un array de objetos con los campos: nombre, documento, titulo, institucion, anio (opcional)');
+      }
+    } else if(file.name.toLowerCase().endsWith('.csv')){
+      // parseo CSV simple: la primera fila son cabeceras
+      const lines = text.split(/\r?\n/).filter(Boolean);
+      const headers = lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,''));
+      const arr = lines.slice(1).map(line=>{
+        const cols = line.split(',').map(c=>c.trim().replace(/^"|"$/g,''));
+        const obj = {};
+        headers.forEach((h,i)=> obj[h] = cols[i] || '');
+        return obj;
+      });
+      registry = arr;
+      document.getElementById('sampleData').textContent = JSON.stringify(registry, null, 2);
+      alert('Padrón CSV cargado. Ahora las verificaciones usarán ese padrón.');
+    } else {
+      alert('Formato no soportado. Use JSON o CSV.');
+    }
+  }catch(err){
+    alert('Error al leer el archivo: '+err.message);
+  }
+});
+
+</script>
+ <p class="hint">El egresado udeceista reposa la imagen, la identidad y la prospectiva del "Alma Máter". En él, como ciudadano, convergen y se dan las reflexiones sobre la realidad de una sociedad. Se constituye en un enlace entre la Universidad y la sociedad, y por lo tanto, es un reflejo de la impronta institucional. </p>
+<center><img src="bottcert.png"></center>
+</body>
+</html>
